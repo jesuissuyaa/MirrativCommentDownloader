@@ -1,0 +1,22 @@
+{
+    "name": "Mirrativ Comment Downloader",
+    "version": "1.0",
+    "description": "Download comments for a Mirrative live as a .txt file",
+    "permissions": [
+        "tabs",
+        "webNavigation",
+        "activeTab"
+    ],
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "content_scripts": [
+        {
+            "matches": ["https://www.mirrativ.com/broadcast/*"],
+            "all_frames": true,
+            "js": ["contentScript.js"],
+            "run_at": "document_end"
+        }
+    ],
+    "manifest_version": 2
+  }
