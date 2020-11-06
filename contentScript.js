@@ -1,11 +1,20 @@
+
+let isListening = false
+
 // case 1: navigated from "配信開始" button
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const stopButton = document.getElementsByClassName('m-btn-primary t-btn-red')[0]
     if (stopButton) {
         console.log('onMessage: streaming...')
-        stopButton.addEventListener("click", () => {
-            downloadComments()
-        })
+        if (!isListening) { // note: event listener is added FOR EACH MESSAGE -> listen only once
+            // set flag
+            isListening = true
+            // add event listener 
+            stopButton.addEventListener("click", () => {
+                downloadComments()
+            })
+        }
+
     }
 })
 
@@ -27,6 +36,7 @@ window.onload = () => {
 // download comments as .txt file
 // in descending order
 const downloadComments = () => {
+    console.log('download')
     // get comments from page
     let ary = []
     let divs = document.getElementsByClassName('m-user-comment')
