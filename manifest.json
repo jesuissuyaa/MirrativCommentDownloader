@@ -3,9 +3,7 @@
     "version": "1.0",
     "description": "Download comments for a Mirrative live as a .txt file",
     "permissions": [
-        "tabs",
-        "webNavigation",
-        "activeTab"
+        "tabs"
     ],
     "background": {
         "scripts": ["background.js"]
