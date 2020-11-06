@@ -1,5 +1,5 @@
 // case 1: navigated from "配信開始" button
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const stopButton = document.getElementsByClassName('m-btn-primary t-btn-red')[0]
     if (stopButton) {
         console.log('onMessage: streaming...')
