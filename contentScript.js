@@ -1,36 +1,28 @@
 
-let isListening = false
 
 // case 1: navigated from "配信開始" button
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const stopButton = document.getElementsByClassName('m-btn-primary t-btn-red')[0]
-    if (stopButton) {
-        console.log('onMessage: streaming...')
-        if (!isListening) { // note: event listener is added FOR EACH MESSAGE -> listen only once
-            // set flag
-            isListening = true
-            // add event listener 
-            stopButton.addEventListener("click", () => {
-                downloadComments()
-            })
-        }
-
-    }
+    listenForStop(stopButton, 'onMessage')
 })
 
 // case 2: refreshed page
 window.onload = () => {
-    const startButton = document.getElementsByClassName('m-btn-primary t-btn-green')[2]
-
     const stopButton = document.getElementsByClassName('m-btn-primary t-btn-red')[0]
-    
-    // case 1: refreshed/reopened broadcast page
+    listenForStop(stopButton, 'onLoad')
+}
+
+const listenForStop = (stopButton, initiator) => {
     if (stopButton) {
-        console.log('onLoad: streaming...')
-        stopButton.addEventListener("click", () => {
+        console.log(`${initiator}: streaming...`)
+        // remove listener
+        stopButton.off('click', downloadComments)
+         // add event listener 
+         stopButton.addEventListener("click", () => {
             downloadComments()
         })
     }
+
 }
 
 // download comments as .txt file
