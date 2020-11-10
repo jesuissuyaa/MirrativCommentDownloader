@@ -1,7 +1,11 @@
+let isDownloaded = false
 
+const broadcastHistoryURL = 'https://www.mirrativ.com/broadcast/history'
 
 // case 1: navigated from "配信開始" button
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    // reset flag at history page
+    if (request.url == broadcastHistoryURL) isDownloaded = false
     const stopButton = document.getElementsByClassName('m-btn-primary t-btn-red')[0]
     listenForStop(stopButton, 'onMessage')
 })
@@ -16,18 +20,19 @@ const listenForStop = (stopButton, initiator) => {
     if (stopButton) {
         console.log(`${initiator}: streaming...`)
         // remove listener
-        stopButton.off('click', downloadComments)
-         // add event listener 
-         stopButton.addEventListener("click", () => {
+        stopButton.removeEventListener('click', downloadComments, true)
+        // add event listener 
+        stopButton.addEventListener("click", () => {
             downloadComments()
-        })
+        }, true)
     }
-
 }
 
 // download comments as .txt file
 // in descending order
 const downloadComments = () => {
+    if (isDownloaded) return
+
     console.log('download')
     // get comments from page
     let ary = []
@@ -72,17 +77,7 @@ const downloadComments = () => {
     a.click();
     document.body.removeChild(a);
     setTimeout(function() { URL.revokeObjectURL(a.href); }, 1500);
+
+    // set flag
+    isDownloaded = true
 }
-
-// document.getElementsByClassName('m-btn-primary t-btn-green')[2].addEventListener("click", () => {
-//     alert('clicked')
-// })
-
-// if (stopButton) { downloadOnStop() }
-// else { console.log('stream not started') }
-
-// const downloadOnStop = () => {
-//     stopButton.addEventListener("click", () => {
-//         console.log('hello from plugin')
-//     })
-// }
