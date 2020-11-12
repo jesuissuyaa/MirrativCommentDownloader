@@ -1,38 +1,41 @@
-let isDownloaded = false
 
-const broadcastHistoryURL = 'https://www.mirrativ.com/broadcast/history'
+let isListening = false
 
 // case 1: navigated from "配信開始" button
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    // reset flag at history page
-    if (request.url == broadcastHistoryURL) isDownloaded = false
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const stopButton = document.getElementsByClassName('m-btn-primary t-btn-red')[0]
-    listenForStop(stopButton, 'onMessage')
+    if (stopButton) {
+        console.log('onMessage: streaming...')
+        if (!isListening) { // note: event listener is added FOR EACH MESSAGE -> listen only once
+            // set flag
+            isListening = true
+            // add event listener 
+            stopButton.addEventListener("click", () => {
+                downloadComments()
+            })
+        }
+
+    }
 })
 
 // case 2: refreshed page
 window.onload = () => {
-    const stopButton = document.getElementsByClassName('m-btn-primary t-btn-red')[0]
-    listenForStop(stopButton, 'onLoad')
-}
+    const startButton = document.getElementsByClassName('m-btn-primary t-btn-green')[2]
 
-const listenForStop = (stopButton, initiator) => {
+    const stopButton = document.getElementsByClassName('m-btn-primary t-btn-red')[0]
+    
+    // case 1: refreshed/reopened broadcast page
     if (stopButton) {
-        console.log(`${initiator}: streaming...`)
-        // remove listener
-        stopButton.removeEventListener('click', downloadComments, true)
-        // add event listener 
+        console.log('onLoad: streaming...')
         stopButton.addEventListener("click", () => {
             downloadComments()
-        }, true)
+        })
     }
 }
 
 // download comments as .txt file
 // in descending order
 const downloadComments = () => {
-    if (isDownloaded) return
-
     console.log('download')
     // get comments from page
     let ary = []
@@ -77,7 +80,17 @@ const downloadComments = () => {
     a.click();
     document.body.removeChild(a);
     setTimeout(function() { URL.revokeObjectURL(a.href); }, 1500);
-
-    // set flag
-    isDownloaded = true
 }
+
+// document.getElementsByClassName('m-btn-primary t-btn-green')[2].addEventListener("click", () => {
+//     alert('clicked')
+// })
+
+// if (stopButton) { downloadOnStop() }
+// else { console.log('stream not started') }
+
+// const downloadOnStop = () => {
+//     stopButton.addEventListener("click", () => {
+//         console.log('hello from plugin')
+//     })
+// }
